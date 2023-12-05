@@ -1,4 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
+
+# https://nullprogram.com/blog/2023/04/29/
 add_definitions(-g3 -Wall -Wextra -Wconversion -Wdouble-promotion -Wno-unused-parameter -Wno-unused-function -Wno-sign-conversion)
 
 project(AdventOfCode2023)
