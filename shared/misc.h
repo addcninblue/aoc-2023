@@ -5,6 +5,9 @@
 
 #define DIE() abort();
 
+#define LIKELY(x)      __builtin_expect(!!(x), 1)
+#define UNLIKELY(x)    __builtin_expect(!!(x), 0)
+
 #ifdef TEST
 
 #include <threads.h>
@@ -78,15 +81,10 @@ void assert_helper_set(char const* const msg)
 #else
 #pragma GCC poison assert_helper_set _jmp_buf ASSERT_STATUS ASSERT_ERR
 
-void _assert_helper(char const* msg)
-{
-    DEATH("%s", msg);
-} __attribute__((noreturn))
-
 #define _ASSERT_HELPER(expr, msg) \
 ({                                \
     /* See assert.h */            \
-    if (expr)                     \
+    if (LIKELY(expr))             \
         ; /* empty */             \
     else                          \
     {                             \

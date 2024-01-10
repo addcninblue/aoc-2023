@@ -17,7 +17,7 @@
 
 SHR_DEFINE_DEBUG_TYPECHECKED_STRUCT(shr_tagptr_t, uintptr_t, _shr_tagged_ptr_create_from_uintptr, _shr_tagged_ptr_get_uintptr);
 
-shr_tagptr_t shr_tagged_ptr_create(void* _ptr, uint32_t tag)
+__attribute__((hot)) shr_tagptr_t shr_tagged_ptr_create(void* _ptr, uint32_t tag)
 {
     PROD_ASSERT(tag < ((uint32_t) 1 << SHR_TAG_BITS), "Too much data in tag");
     uintptr_t ptr = (uintptr_t) _ptr;
@@ -25,12 +25,12 @@ shr_tagptr_t shr_tagged_ptr_create(void* _ptr, uint32_t tag)
     return _shr_tagged_ptr_create_from_uintptr((ptr << (SHR_PTR_BITS - SHR_ADDR_BITS)) | tag);
 }
 
-void* shr_tagged_ptr_get_ptr(shr_tagptr_t ptr)
+__attribute__((hot)) void* shr_tagged_ptr_get_ptr(shr_tagptr_t ptr)
 {
     return (void*) (uintptr_t) (((intptr_t)_shr_tagged_ptr_get_uintptr(ptr)) >> SHR_TAG_BITS << SHR_ALIGNMENT_BITS);
 }
 
-uint32_t shr_tagged_ptr_get_tag(shr_tagptr_t ptr)
+__attribute__((hot)) uint32_t shr_tagged_ptr_get_tag(shr_tagptr_t ptr)
 {
     return (uint32_t) _shr_tagged_ptr_get_uintptr(ptr) & ((1 << SHR_TAG_BITS) - 1);
 }
