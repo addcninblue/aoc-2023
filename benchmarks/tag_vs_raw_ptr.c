@@ -3,7 +3,7 @@
 #include <shared/logging.h>
 #include <stdbool.h>
 
-const int n = 524288;
+const int ELEMENTS = 1024;
 
 struct linked_list
 {
@@ -36,58 +36,68 @@ void* tagged_create_next_ptr(void* ptr)
     return (void*) _shr_tagged_ptr_get_uintptr(shr_tagged_ptr_create(ptr, 0));
 }
 
-B63_BASELINE(raw_ptr, _n)
+B63_BASELINE(raw_ptr, n)
 {
     struct linked_list* head;
     struct linked_list* linked_list;
     B63_SUSPEND
     {
-        linked_list = _init_linked_lists(n, baseline_create_next_ptr);
+        linked_list = _init_linked_lists(ELEMENTS, baseline_create_next_ptr);
         head = linked_list;
     }
-    int i = 0;
-    for(; i < n; i++)
+    for (int j = 0; j < n; j++)
     {
-        if (linked_list == NULL)
+        linked_list = head;
+        int i = 0;
+        for(; i < ELEMENTS; i++)
         {
-            break;
+            if (linked_list == NULL)
+            {
+                break;
+            }
+            PROD_ASSERT(i == linked_list->data);
+            linked_list = linked_list->next_linked_list;
         }
-        PROD_ASSERT(i == linked_list->data);
-        linked_list = linked_list->next_linked_list;
+        PROD_ASSERT(i == ELEMENTS);
     }
-    PROD_ASSERT(i == n);
     B63_KEEP(linked_list);
     free(head);
 }
 
-B63_BENCHMARK(tagged_ptr, _n)
+B63_BENCHMARK(tagged_ptr, n)
 {
-    shr_tagptr_t* linked_list = NULL;
+    shr_tagptr_t linked_list;
     shr_tagptr_t* head = NULL;
     B63_SUSPEND
     {
-        shr_tagptr_t* head = malloc(n * sizeof(shr_tagptr_t));
+        head = malloc(ELEMENTS * sizeof(shr_tagptr_t));
         shr_tagptr_t* tail = head;
-        for (int i = 0; i < n-1; i++)
+        for (int i = 0; i < ELEMENTS-1; i++)
         {
             shr_tagptr_t* next_linked_list = &head[i+1];
             *tail = shr_tagged_ptr_create(next_linked_list, i);
             tail = next_linked_list;
         }
-        *tail = shr_tagged_ptr_create(NULL, n-1);
-        linked_list = head;
+        *tail = shr_tagged_ptr_create(NULL, ELEMENTS-1);
+        linked_list = *head;
+        PROD_ASSERT(head != NULL);
     }
-    int i = 0;
-    for(; i < n; i++)
+    for (int j = 0; j < n; j++)
     {
-        if (linked_list == NULL)
+        linked_list = *head;
+        int i = 0;
+        for(; i < ELEMENTS; i++)
         {
-            break;
+            PROD_ASSERT(i == shr_tagged_ptr_get_tag(linked_list));
+            void* _ptr = shr_tagged_ptr_get_ptr(linked_list);
+            if (_ptr == NULL)
+            {
+                break;
+            }
+            linked_list = *(shr_tagptr_t*)_ptr;
         }
-        PROD_ASSERT(i == shr_tagged_ptr_get_tag(*linked_list));
-        linked_list = shr_tagged_ptr_get_ptr(*linked_list);
+        PROD_ASSERT(i == ELEMENTS-1);
     }
-    PROD_ASSERT(i == n);
     B63_KEEP(linked_list);
     free(head);
 }
