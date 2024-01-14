@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
 
 # https://nullprogram.com/blog/2023/04/29/
-add_definitions(-g3 -Wall -Wextra -Wconversion -Wdouble-promotion -Wno-unused-parameter -Wno-unused-function -Wno-sign-conversion)
+add_definitions(-g3 -Wall -Wextra -Wconversion -Wdouble-promotion -Wno-unused-parameter -Wno-unused-function -Wno-sign-conversion -frecord-gcc-switches -march=native)
+
+set(CMAKE_C_STANDARD 17)
 
 project(AdventOfCode2023)
 include_directories(${CMAKE_SOURCE_DIR})
@@ -39,5 +41,5 @@ file(GLOB_RECURSE BENCHMARKS "benchmarks/*.c")
 foreach(BENCHMARK ${BENCHMARKS})
    get_filename_component(TARGET_NAME ${BENCHMARK} NAME_WE)
    add_executable(${TARGET_NAME} ${BENCHMARK})
-   target_link_libraries(${TARGET_NAME} m)
+   target_link_libraries(${TARGET_NAME} m gcov)
 endforeach()
