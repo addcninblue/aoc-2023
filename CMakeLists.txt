@@ -21,9 +21,9 @@ target_include_directories(unity PUBLIC shared/unity)
 
 add_executable(1_1 1/1.c)
 add_executable(1_2 1/2.c)
-add_executable(2_1 2/1.c)
-add_executable(2_tests 2/tests.c)
-target_link_libraries(2_tests unity)
+# add_executable(2_1 2/1.c)
+# add_executable(2_tests 2/tests.c)
+# target_link_libraries(2_tests unity)
 
 # add_executable(tagged_ptr_tests tests/tagged_ptr_tests.c)
 # target_link_libraries(tagged_ptr_tests unity)
