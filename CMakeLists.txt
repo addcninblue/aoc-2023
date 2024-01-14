@@ -27,7 +27,6 @@ add_executable(1_2 1/2.c)
 
 # add_executable(tagged_ptr_tests tests/tagged_ptr_tests.c)
 # target_link_libraries(tagged_ptr_tests unity)
-add_executable(s_coroutine sandbox/coroutine.c)
 
 file(GLOB_RECURSE TESTS "tests/*.c")
 foreach(TEST ${TESTS})
